@@ -27,6 +27,7 @@ https://makeup.com.ua/product/2035/"></textarea>
       }
 
       function isDifferent(items, getProperty) {
+        if (items.length < 2) return true;
         for (let i = items.length - 1; i--;) {
           if (items[i] !== items[i + 1])
             return true
@@ -66,7 +67,9 @@ https://makeup.com.ua/product/2035/"></textarea>
       }
 
       function compare(links) {
+        $output.innerText = 'Loading...'
         var ids = links.map(link => link.match(/\/(\d+)/)[1])
+        location.hash = ids.join(',')
         load(ids).then(function (products) {
           renderTable(products.filter(p => !p.error))
         })
@@ -79,9 +82,15 @@ https://makeup.com.ua/product/2035/"></textarea>
           alert('Enter links first')
           return
         }
-        $output.innerText = 'Loading...'
         compare(links)
       })
+
+      if (location.hash && location.hash.match(/^#(\d+,)*\d+$/)) {
+        const links = location.hash.slice(1).split(',')
+          .map(id => `https://makeup.com.ua/product/${id}/`)
+        compare(links);
+        $input.value = links.join('\n')
+      }
     </script>
 
   </body>
