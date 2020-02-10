@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MakeUp</title>
+    <link rel="stylesheet" href="style.css" />
+    <meta charset="utf8"/>
+  </head>
+  <body>
+
+    <form id="compare-form">
+      <h1>Compare MakeUp products</h1>
+      <textarea id="links"
+        placeholder="https://makeup.com.ua/product/11180/
+https://makeup.com.ua/product/2035/"></textarea>
+      <input type="submit" value="Compare" />
+      <div id="result"></div>
+    </form>
+
+    <script>
+      var $form = document.querySelector('#compare-form')
+      var $output = document.querySelector('#result')
+      var $input = document.querySelector('#links')
+
+      function load(ids) {
+        return fetch('/api/collect.js?products=' + ids.join(','))
+          .then(response => response.json())
+      }
+
+      function isDifferent(items, getProperty) {
+        for (let i = items.length - 1; i--;) {
+          if (items[i] !== items[i + 1])
+            return true
+        }
+        return false
+      }
+
+      function renderRow(title, items, template) {
+        const diff = isDifferent(items)
+        return '<tr class="' + (diff ? 'diff' : 'same') + '"><th>' + title + '</th>' +
+          items.map(function (value) {
+            return '<td>' + (template ? template(value) : value) || '' + '</td>'
+          }).join('') + '</tr>'
+      }
+
+      function collectProductsProperties(products) {
+        return [...new Set(products.reduce((props, product) => props.concat(Object.keys(product.properties)), []))]
+      }
+
+      function renderTable(products) {
+        var htmlTable = '<table>' +
+          renderRow('', products.map(p => '<b>' + p.name + '</b>')) +
+          renderRow('', products.map(p => '<img src="' + p.imageUri + '"/>')) +
+          renderRow('Category', products.map(p => p.category)) +
+          renderRow('Price', products.map(p => p.price + ' uah')) +
+          renderRow('Rating/Reviews', products.map(p => p.rating + ' / ' + p.reviews)) +
+          renderRow('Reviews', products.map(p => p.reviews)) +
+          collectProductsProperties(products)
+            .map(property => renderRow(
+              property,
+              products.map(p => p.properties[property])
+            ))
+            .join('')
+        '</table>'
+
+        $output.innerHTML = htmlTable
+      }
+
+      function compare(links) {
+        var ids = links.map(link => link.match(/\/(\d+)/)[1])
+        load(ids).then(function (products) {
+          renderTable(products.filter(p => !p.error))
+        })
+      }
+
+      $form.addEventListener('submit', function (event) {
+        event.preventDefault()
+        const links = $input.value.match(/https\:\/\/makeup.com.ua\/product\/\d+/g)
+        if (!links || !links.length) {
+          alert('Enter links first')
+          return
+        }
+        $output.innerText = 'Loading...'
+        compare(links)
+      })
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,56 @@
+body {
+  font-family: 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', 'Helvetica',
+    'Arial', sans-serif;
+  font-family: Montserrat, sans-serif;
+  box-sizing: border-box;
+  padding: 20px 20px 60px;
+  font-size: 16px;
+  line-height: 1.65;
+  word-break: break-word;
+  font-kerning: auto;
+  font-variant: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  hyphens: auto;
+  text-align: center;
+}
+
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  padding: .4em;
+  min-height: 6em;
+  max-width: 500px;
+  width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+
+#result {
+  overflow: auto;
+  margin: 2em 0;
+}
+
+table {
+  min-width: 100%;
+  text-align: left;
+  border-spacing: 0;
+}
+
+tr:nth-child(odd) {
+  background: #dbf2f9;
+}
+
+th, td {
+  padding: .4em .5em;
+}
+
+.same th, .same td {
+  opacity: .4;
+}
+
+img {
+  max-width: 240px;
+  max-height: 240px;
+}
