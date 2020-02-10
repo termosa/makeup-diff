@@ -13,13 +13,19 @@
         placeholder="https://makeup.com.ua/product/11180/
 https://makeup.com.ua/product/2035/"></textarea>
       <input type="submit" value="Compare" />
+      <div id="share">
+        Share it with friends: <b id="share-link"></b>
+      </div>
       <div id="result"></div>
     </form>
 
     <script>
-      var $form = document.querySelector('#compare-form')
-      var $output = document.querySelector('#result')
-      var $input = document.querySelector('#links')
+      const $form = document.querySelector('#compare-form')
+      const $output = document.querySelector('#result')
+      const $input = document.querySelector('#links')
+      const $share = document.querySelector('#share-link')
+
+      $share.innerText = location.href
 
       function load(ids) {
         return fetch('/api/collect.js?products=' + ids.join(','))
@@ -49,7 +55,7 @@ https://makeup.com.ua/product/2035/"></textarea>
       }
 
       function renderTable(products) {
-        var htmlTable = '<table>' +
+        $output.innerHTML = '<table>' +
           renderRow('', products.map(p => '<b>' + p.name + '</b>')) +
           renderRow('', products.map(p => '<img src="' + p.imageUri + '"/>')) +
           renderRow('Category', products.map(p => p.category)) +
@@ -63,17 +69,30 @@ https://makeup.com.ua/product/2035/"></textarea>
             ))
             .join('')
         '</table>'
-
-        $output.innerHTML = htmlTable
       }
 
       function compare(links) {
         $output.innerText = 'Loading...'
-        var ids = links.map(link => link.match(/\/(\d+)/)[1])
+        const ids = links.map(link => link.match(/\/(\d+)/)[1])
         location.hash = ids.join(',')
+        $share.innerText = location.href
         load(ids).then(function (products) {
           renderTable(products.filter(p => !p.error))
         })
+      }
+
+      function selectLink() {
+        if (document.body.createTextRange) {
+          const range = document.body.createTextRange();
+          range.moveToElementText($share);
+          range.select();
+        } else if (window.getSelection) {
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents($share);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
       }
 
       $form.addEventListener('submit', function (event) {
@@ -84,6 +103,7 @@ https://makeup.com.ua/product/2035/"></textarea>
           return
         }
         compare(links)
+        selectLink()
       })
 
       if (location.hash && location.hash.match(/^#(\d+,)*\d+$/)) {
@@ -92,6 +112,8 @@ https://makeup.com.ua/product/2035/"></textarea>
         compare(links);
         $input.value = links.join('\n')
       }
+
+      $share.parentElement.addEventListener('click', selectLink)
     </script>
 
   </body>
