@@ -30,7 +30,7 @@ const loadProduct = async id => {
 
   try {
     const htmlPage = await loadPage(`https://makeup.com.ua/product/${id}/`)
-    cache[id] = {
+    const product = {
       id,
       imageUri: matchAGroup(htmlPage, /product\-slider__item.+?img.+?src="([^\s]+)"/),
       name: matchAGroup(htmlPage, /product\-item__name.+?>([^<]+)/),
@@ -41,10 +41,12 @@ const loadProduct = async id => {
       properties: parseProperties(matchAGroup(htmlPage, /product\-item__text.+?<div>(.+?)<\/div>/)),
       loadedAt: Date.now()
     }
-    return cache[id]
+
+    cache[id] = product.name ? product : { id, error: 'Cannot parse the page' }
   } catch (error) {
-    return { id, error: error.message }
+    cahce[id] = { id, error: error.message }
   }
+  return cache[id]
 }
 
 export default async (req, res) => {

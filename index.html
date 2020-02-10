@@ -9,9 +9,10 @@
 
     <form id="compare-form">
       <h1>Compare MakeUp products</h1>
-      <textarea id="links"
-        placeholder="https://makeup.com.ua/product/11180/
+      <label>Copy products links to the input below (8 is a maximum):
+        <textarea id="links" placeholder="https://makeup.com.ua/product/11180/
 https://makeup.com.ua/product/2035/"></textarea>
+      </label>
       <input type="submit" value="Compare" />
       <div id="share">
         Share it with friends: <b id="share-link"></b>
@@ -73,7 +74,7 @@ https://makeup.com.ua/product/2035/"></textarea>
 
       function compare(links) {
         $output.innerText = 'Loading...'
-        const ids = links.map(link => link.match(/\/(\d+)/)[1])
+        const ids = [...new Set(links.map(link => link.match(/\/(\d+)/)[1]))].slice(0, 8)
         location.hash = ids.join(',')
         $share.innerText = location.href
         load(ids).then(function (products) {
