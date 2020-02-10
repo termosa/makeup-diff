@@ -29,7 +29,7 @@ const loadProduct = async id => {
     return { ...cache[id], fromCache: true }
 
   try {
-    const htmlPage = await loadPage(`https://makeup.com.ua/product/${id}/`)
+    const htmlPage = await loadPage(`https://makeup.com.ua/product/${id}/?utm_campaign=makeup-now&utm_source=makeup.now.sh&utm_medium=organic&utm_content=parsing`)
     const product = {
       id,
       imageUri: matchAGroup(htmlPage, /product\-slider__item.+?img.+?src="([^\s]+)"/),
