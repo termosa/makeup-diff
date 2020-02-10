@@ -39,7 +39,8 @@ https://makeup.com.ua/product/2035/"></textarea>
         const diff = isDifferent(items)
         return '<tr class="' + (diff ? 'diff' : 'same') + '"><th>' + title + '</th>' +
           items.map(function (value) {
-            return '<td>' + (template ? template(value) : value) || '' + '</td>'
+            value = value || ''
+            return '<td>' + (template ? template(value) : value) + '</td>'
           }).join('') + '</tr>'
       }
 
@@ -52,13 +53,13 @@ https://makeup.com.ua/product/2035/"></textarea>
           renderRow('', products.map(p => '<b>' + p.name + '</b>')) +
           renderRow('', products.map(p => '<img src="' + p.imageUri + '"/>')) +
           renderRow('Category', products.map(p => p.category)) +
-          renderRow('Price', products.map(p => p.price + ' uah')) +
-          renderRow('Rating/Reviews', products.map(p => p.rating + ' / ' + p.reviews)) +
-          renderRow('Reviews', products.map(p => p.reviews)) +
+          renderRow('Price', products.map(p => (p.price || '?') + ' uah')) +
+          renderRow('Rating/Reviews', products.map(p => (p.rating || 0) + ' / ' + (p.reviews || 0))) +
+          renderRow('Reviews', products.map(p => p.reviews || '0')) +
           collectProductsProperties(products)
             .map(property => renderRow(
               property,
-              products.map(p => p.properties[property])
+              products.map(p => p.properties[property] || '')
             ))
             .join('')
         '</table>'

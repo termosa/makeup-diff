@@ -1,5 +1,8 @@
 import request from 'request'
 
+const day = 1e3 * 60 * 60 * 24
+const cache = {}
+
 const matchAGroup = (str, regexp) => (str.match(regexp) || [])[1]
 
 const parseProperties = htmlProps => {
@@ -22,9 +25,12 @@ const loadPage = link => new Promise((resolve, reject) => {
 })
 
 const loadProduct = async id => {
+  if (cache[id] && Date.now() - cache[id].loadedAt < day)
+    return { ...cache[id], fromCache: true }
+
   try {
     const htmlPage = await loadPage(`https://makeup.com.ua/product/${id}/`)
-    return {
+    cache[id] = {
       id,
       imageUri: matchAGroup(htmlPage, /product\-slider__item.+?img.+?src="([^\s]+)"/),
       name: matchAGroup(htmlPage, /product\-item__name.+?>([^<]+)/),
@@ -32,8 +38,10 @@ const loadProduct = async id => {
       price: matchAGroup(htmlPage, /product\-item__price.+?>(\d+)/),
       rating: matchAGroup(htmlPage, /ratingValue.+?content="([^"]+)"/),
       reviews: matchAGroup(htmlPage, /reviewCount.+?content="([^"]+)"/),
-      properties: parseProperties(matchAGroup(htmlPage, /product\-item__text.+?<div>(.+?)<\/div>/))
+      properties: parseProperties(matchAGroup(htmlPage, /product\-item__text.+?<div>(.+?)<\/div>/)),
+      loadedAt: Date.now()
     }
+    return cache[id]
   } catch (error) {
     return { id, error: error.message }
   }
