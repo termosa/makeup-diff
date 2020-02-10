@@ -8,14 +8,17 @@
   <body>
 
     <form id="compare-form">
-      <h1>Compare MakeUp products</h1>
-      <label>Copy products links to the input below (8 is a maximum):
-        <textarea id="links" placeholder="https://makeup.com.ua/product/11180/
+      <h1>Сравнение товаров с <a target="_blank" href="https://makeup.com.ua">MakeUp</a></h1>
+
+      <label>Скопируй сюда ссылки на товары (максимум 8 ссылок):
+        <textarea id="links" placeholder="К примеру:
+
+https://makeup.com.ua/product/11180/
 https://makeup.com.ua/product/2035/"></textarea>
       </label>
-      <input type="submit" value="Compare" />
+      <input type="submit" value="Сравнить" />
       <div id="share">
-        Share it with friends: <b id="share-link"></b>
+        Поделись с друзьями и подругами: <b id="share-link"></b>
       </div>
       <div id="result"></div>
     </form>
@@ -55,14 +58,19 @@ https://makeup.com.ua/product/2035/"></textarea>
         return [...new Set(products.reduce((props, product) => props.concat(Object.keys(product.properties)), []))]
       }
 
+      function renderRatingAndReviews(product) {
+        return `<a target="_blank" href="https://makeup.com.ua/product/${product.id}/otzivi/">` +
+          (product.rating || 0) + ' / ' + (product.reviews || 0) +
+        '</a>'
+      }
+
       function renderTable(products) {
         $output.innerHTML = '<table>' +
-          renderRow('', products.map(p => '<b>' + p.name + '</b>')) +
+          renderRow('', products.map(p => `<b><a target="_blank" href="https://makeup.com.ua/product/${p.id}/">${p.name}</a></b>`)) +
           renderRow('', products.map(p => '<img src="' + p.imageUri + '"/>')) +
-          renderRow('Category', products.map(p => p.category)) +
-          renderRow('Price', products.map(p => (p.price || '?') + ' uah')) +
-          renderRow('Rating/Reviews', products.map(p => (p.rating || 0) + ' / ' + (p.reviews || 0))) +
-          renderRow('Reviews', products.map(p => p.reviews || '0')) +
+          renderRow('Категория', products.map(p => p.category)) +
+          renderRow('Стоимость', products.map(p => (p.price || '?') + ' uah')) +
+          renderRow('Рейтинг/Отзывы', products.map(renderRatingAndReviews)) +
           collectProductsProperties(products)
             .map(property => renderRow(
               property,
@@ -100,7 +108,7 @@ https://makeup.com.ua/product/2035/"></textarea>
         event.preventDefault()
         const links = $input.value.match(/https\:\/\/makeup.com.ua\/product\/\d+/g)
         if (!links || !links.length) {
-          alert('Enter links first')
+          alert('Сперва добавь ссылоок на товары')
           return
         }
         compare(links)
