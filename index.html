@@ -8,7 +8,7 @@
   <body>
 
     <form id="compare-form">
-      <h1>Сравнение товаров с <a target="_blank" href="https://makeup.com.ua?utm_campaign=makeup-now&utm_source=makeup.now.sh&utm_medium=organic&utm_content=header">MakeUp</a></h1>
+      <h1>Сравнение товаров с <a target="_blank" href="https://makeup.com.ua?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=header">MakeUp</a></h1>
 
       <label>Скопируй сюда ссылки на товары (максимум 8 ссылок):
         <textarea id="links" placeholder="К примеру:
@@ -59,16 +59,16 @@ https://makeup.com.ua/product/2035/"></textarea>
       }
 
       function renderRatingAndReviews(product) {
-        return `<a target="_blank" href="https://makeup.com.ua/product/${product.id}/otzivi/?utm_campaign=makeup-now&utm_source=makeup.now.sh&utm_medium=organic&utm_content=reviews">` +
+        return `<a target="_blank" href="https://makeup.com.ua/product/${product.id}/otzivi/?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=reviews">` +
           (product.rating || 0) + ' / ' + (product.reviews || 0) +
         '</a>'
       }
 
       function renderTable(products) {
         $output.innerHTML = '<table>' +
-          renderRow('', products.map(p => `<b><a target="_blank" href="https://makeup.com.ua/product/${p.id}/?utm_campaign=makeup-now&utm_source=makeup.now.sh&utm_medium=organic&utm_content=product">${p.name}</a></b>`)) +
+          renderRow('', products.map(p => `<b><a target="_blank" href="https://makeup.com.ua/product/${p.id}/?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=product">${p.name}</a></b>`)) +
           renderRow('', products.map(p => '<img src="' + p.imageUri + '"/>')) +
-          renderRow('', products.map(p => p.price ? `<b><a target="_blank" href="https://makeup.com.ua/product/${p.id}/?utm_campaign=makeup-now&utm_source=makeup.now.sh&utm_medium=organic&utm_content=buy">Купить за ${p.price} грн.</a></b>` : '')) +
+          renderRow('', products.map(p => p.price ? `<b><a target="_blank" href="https://makeup.com.ua/product/${p.id}/?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=buy">Купить за ${p.price} грн.</a></b>` : '')) +
           renderRow('Категория', products.map(p => p.category)) +
           renderRow('Рейтинг/Отзывы', products.map(renderRatingAndReviews)) +
           collectProductsProperties(products)
