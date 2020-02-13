@@ -1,14 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
   <head>
-    <title>MakeUp</title>
-    <link rel="stylesheet" href="style.css" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YE2WMMXXB9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YE2WMMXXB9');
+    </script>
+
     <meta charset="utf8"/>
+    <title>MakeUp</title>
+
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
 
     <form id="compare-form">
-      <h1>Сравнение товаров с <a target="_blank" href="https://makeup.com.ua?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=header">MakeUp</a></h1>
+      <h1>Сравнение товаров с <a target="_blank" data-link-role="open_makeup" href="https://makeup.com.ua?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=header">MakeUp</a></h1>
 
       <label>Скопируй сюда ссылки на товары (максимум 8 ссылок):
         <textarea id="links" placeholder="К примеру:
@@ -24,6 +35,15 @@ https://makeup.com.ua/product/2035/"></textarea>
     </form>
 
     <script>
+      const userAction = (event_category, event_label, value) =>
+        gtag('event', 'userAction', { event_category, event_label, value })
+
+      document.body.addEventListener('click', event => {
+        if (event.target.tagName !== 'A') return
+        if (!event.target.dataset.linkRole) return
+        userAction('click', 'link', event.target.dataset.linkRole)
+      })
+
       const $form = document.querySelector('#compare-form')
       const $output = document.querySelector('#result')
       const $input = document.querySelector('#links')
@@ -59,16 +79,16 @@ https://makeup.com.ua/product/2035/"></textarea>
       }
 
       function renderRatingAndReviews(product) {
-        return `<a target="_blank" href="https://makeup.com.ua/product/${product.id}/otzivi/?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=reviews">` +
+        return `<a target="_blank" data-link-role="see_product_reviews" href="https://makeup.com.ua/product/${product.id}/otzivi/?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=reviews">` +
           (product.rating || 0) + ' / ' + (product.reviews || 0) +
         '</a>'
       }
 
       function renderTable(products) {
         $output.innerHTML = '<table>' +
-          renderRow('', products.map(p => `<b><a target="_blank" href="https://makeup.com.ua/product/${p.id}/?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=product">${p.name}</a></b>`)) +
+          renderRow('', products.map(p => `<b><a target="_blank" data-link-role="see_product" href="https://makeup.com.ua/product/${p.id}/?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=product">${p.name}</a></b>`)) +
           renderRow('', products.map(p => '<img src="' + p.imageUri + '"/>')) +
-          renderRow('', products.map(p => p.price ? `<b><a target="_blank" href="https://makeup.com.ua/product/${p.id}/?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=buy">Купить за ${p.price} грн.</a></b>` : '')) +
+          renderRow('', products.map(p => p.price ? `<b><a target="_blank" data-link-role="buy_product" href="https://makeup.com.ua/product/${p.id}/?utm_campaign=makeup-me&utm_source=makeup.me.st&utm_medium=organic&utm_content=buy">Купить за ${p.price} грн.</a></b>` : '')) +
           renderRow('Категория', products.map(p => p.category)) +
           renderRow('Рейтинг/Отзывы', products.map(renderRatingAndReviews)) +
           collectProductsProperties(products)
@@ -107,8 +127,10 @@ https://makeup.com.ua/product/2035/"></textarea>
       $form.addEventListener('submit', function (event) {
         event.preventDefault()
         const links = $input.value.match(/https\:\/\/makeup.com.ua\/product\/\d+/g)
-        if (!links || !links.length) {
-          alert('Сперва добавь ссылоок на товары')
+        const linksCount = links ? links.length : 0
+        userAction('click', 'compareButton', linksCount)
+        if (!linksCount) {
+          alert('Сперва добавь ссылки на товары')
           return
         }
         compare(links)
